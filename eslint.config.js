@@ -8,7 +8,7 @@ export default defineConfig([
     files: ['**/*.{js,mjs,cjs}'],
     plugins: { js },
     extends: ['js/recommended', eslintConfigPrettier],
-    languageOptions: { globals: globals.browser },
+    languageOptions: { globals: { ...globals.browser, ...globals.jest } },
     rules: {
       'prefer-const': 'warn',
     },

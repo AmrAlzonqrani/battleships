@@ -1,5 +1,5 @@
 {
-  "name": "repo",
+  "name": "battleships",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,16 +12,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AmrTeemann12/repo.git"
+    "url": "git+https://github.com/AmrAlzonqrani/battleships.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/AmrTeemann12/repo/issues"
+    "url": "https://github.com/AmrAlzonqrani/battleships/issues"
   },
-  "homepage": "https://github.com/AmrTeemann12/repo#readme",
+  "homepage": "https://github.com/AmrAlzonqrani/battleships#readme",
   "devDependencies": {
     "@babel/preset-env": "^7.29.7",
     "@eslint/js": "^10.0.1",
