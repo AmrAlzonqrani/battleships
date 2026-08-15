@@ -53,8 +53,8 @@ describe('GameBoard instance', () => {
       expect(ships).toHaveLength(1);
       expect(ships[0].size).toBe(2);
       expect(ships[0].hits).toBe(0);
-      expect(board.viewSquare([1, 1]).ship).toBe(ships[0]);
-      expect(board.viewSquare([1, 2]).ship).toBe(ships[0]);
+      expect(board.viewSquare([1, 1]).ship).toStrictEqual(ships[0]);
+      expect(board.viewSquare([1, 2]).ship).toStrictEqual(ships[0]);
     });
 
     test('places multiple ships and correctly assign occupied squares to each ship', () => {
@@ -69,14 +69,14 @@ describe('GameBoard instance', () => {
       const twoSquareShip = ships.find((ship) => ship.size === 2);
       const fiveSquareShip = ships.find((ship) => ship.size === 5);
 
-      expect(board.viewSquare([3, 1]).ship).toBe(oneSquareShip);
-      expect(board.viewSquare([1, 1]).ship).toBe(twoSquareShip);
-      expect(board.viewSquare([1, 2]).ship).toBe(twoSquareShip);
-      expect(board.viewSquare([1, 4]).ship).toBe(fiveSquareShip);
-      expect(board.viewSquare([2, 4]).ship).toBe(fiveSquareShip);
-      expect(board.viewSquare([3, 4]).ship).toBe(fiveSquareShip);
-      expect(board.viewSquare([4, 4]).ship).toBe(fiveSquareShip);
-      expect(board.viewSquare([5, 4]).ship).toBe(fiveSquareShip);
+      expect(board.viewSquare([3, 1]).ship).toStrictEqual(oneSquareShip);
+      expect(board.viewSquare([1, 1]).ship).toStrictEqual(twoSquareShip);
+      expect(board.viewSquare([1, 2]).ship).toStrictEqual(twoSquareShip);
+      expect(board.viewSquare([1, 4]).ship).toStrictEqual(fiveSquareShip);
+      expect(board.viewSquare([2, 4]).ship).toStrictEqual(fiveSquareShip);
+      expect(board.viewSquare([3, 4]).ship).toStrictEqual(fiveSquareShip);
+      expect(board.viewSquare([4, 4]).ship).toStrictEqual(fiveSquareShip);
+      expect(board.viewSquare([5, 4]).ship).toStrictEqual(fiveSquareShip);
     });
 
     test('throws when trying to place a ship on a square that is already occupied by another ship', () => {
@@ -145,7 +145,7 @@ describe('GameBoard instance', () => {
 
       board.receiveAttack([5, 2]);
       board.receiveAttack([6, 2]);
-      expect(board.viewSquare([5, 2]).ship.isSunk()).toBe(true);
+      expect(board.viewSquare([5, 2]).ship.isSunk).toBe(true);
     });
 
     test('throws for invalid square coordinates', () => {
@@ -187,7 +187,7 @@ describe('GameBoard instance', () => {
       expect(board.allSunk()).toBe(false);
       board.receiveAttack([3, 3]);
       board.receiveAttack([1, 1]);
-      expect(board.viewSquare([3, 3]).ship.isSunk()).toBe(true);
+      expect(board.viewSquare([3, 3]).ship.isSunk).toBe(true);
       expect(board.allSunk()).toBe(false);
     });
 

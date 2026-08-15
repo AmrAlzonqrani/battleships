@@ -18,7 +18,7 @@ export class GameBoard {
   }
 
   viewShips() {
-    return this.#ships;
+    return this.#ships.map((ship) => ship.shipData);
   }
 
   viewSquare(square) {
@@ -26,10 +26,10 @@ export class GameBoard {
       throw new Error('invalid square query request');
 
     const sqString = square.toString();
-    const ship = this.#squares.get(sqString) ?? null;
+    const ship = this.#squares.get(sqString);
     const hit = this.#attacks.has(sqString);
 
-    return { ship, hit };
+    return { ship: ship ? ship.shipData : null, hit };
   }
 
   placeShip(x, y, size, vertical = true) {
@@ -37,7 +37,7 @@ export class GameBoard {
       throw new Error('invalid board coordinates');
 
     const squares = [];
-    const ship = new Ship(size);
+    const ship = new Ship(size, `ship-${this.#ships.length + 1}`);
 
     if (vertical) {
       if (!this.#isValidCoord(y + size - 1))

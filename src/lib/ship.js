@@ -1,11 +1,13 @@
 export class Ship {
   #size;
   #hits = 0;
+  #id;
 
-  constructor(size) {
+  constructor(size, id) {
     if (!Ship.#isValidSize(size))
       throw new Error('invalid size, expects an integer between 1 and 5');
     this.#size = size;
+    this.#id = id;
   }
 
   static #isValidSize(size) {
@@ -26,5 +28,14 @@ export class Ship {
 
   isSunk() {
     return this.#hits === this.#size;
+  }
+
+  get shipData() {
+    return {
+      id: this.#id,
+      size: this.#size,
+      hits: this.#hits,
+      isSunk: this.isSunk(),
+    };
   }
 }

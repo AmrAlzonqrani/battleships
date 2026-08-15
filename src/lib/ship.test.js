@@ -79,4 +79,27 @@ describe('Ship instance', () => {
       expect(ship.isSunk()).toBe(true);
     });
   });
+
+  describe('shipData property', () => {
+    test('returns object containing the ship Data at the call time', () => {
+      const ship = new Ship(3, 'ship-1');
+      const data = ship.shipData;
+
+      expect(data.id).toBe('ship-1');
+      expect(data.size).toBe(3);
+      expect(data.hits).toBe(0);
+      expect(data.isSunk).toBe(false);
+
+      ship.hit();
+      ship.hit();
+      ship.hit();
+
+      const afterHitData = ship.shipData;
+
+      expect(afterHitData.id).toBe('ship-1');
+      expect(afterHitData.size).toBe(3);
+      expect(afterHitData.hits).toBe(3);
+      expect(afterHitData.isSunk).toBe(true);
+    });
+  });
 });
