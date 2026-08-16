@@ -120,6 +120,65 @@ describe('GameBoard instance', () => {
         'placing ship out of board bounds'
       );
     });
+
+    describe('limits the placed ships according to its size as follows:', () => {
+      test('2 one-square ships', () => {
+        board.placeShip(1, 1, 1);
+        board.placeShip(5, 5, 1, false);
+        expect(() => board.placeShip(1, 5, 1)).toThrow(
+          'cannot place more ships with size of 1'
+        );
+      });
+
+      test('3 two-squares ships', () => {
+        board.placeShip(1, 1, 2);
+        board.placeShip(5, 5, 2, false);
+        board.placeShip(10, 6, 2);
+        expect(() => board.placeShip(1, 5, 2)).toThrow(
+          'cannot place more ships with size of 2'
+        );
+      });
+
+      test('2 three-squares ships', () => {
+        board.placeShip(1, 1, 3);
+        board.placeShip(5, 5, 3, false);
+        expect(() => board.placeShip(1, 5, 3)).toThrow(
+          'cannot place more ships with size of 3'
+        );
+      });
+
+      test('1 four-squares ship', () => {
+        board.placeShip(1, 1, 4);
+        expect(() => board.placeShip(1, 5, 4)).toThrow(
+          'cannot place more ships with size of 4'
+        );
+      });
+
+      test('1 five-squares ship', () => {
+        board.placeShip(1, 1, 5);
+        expect(() => board.placeShip(1, 5, 5)).toThrow(
+          'cannot place more ships with size of 5'
+        );
+      });
+
+      test('place all ships', () => {
+        board.placeShip(1, 1, 5);
+        board.placeShip(2, 1, 4);
+        board.placeShip(3, 1, 3);
+        board.placeShip(4, 1, 3);
+        board.placeShip(5, 1, 2);
+        board.placeShip(6, 1, 2);
+        board.placeShip(7, 1, 2);
+        board.placeShip(8, 1, 1);
+        board.placeShip(9, 1, 1);
+
+        for (let i = 1; i <= 5; i++) {
+          expect(() => board.placeShip(1, 6, i, false)).toThrow(
+            `cannot place more ships with size of ${i}`
+          );
+        }
+      });
+    });
   });
 
   describe('receiveAttack()', () => {
@@ -159,16 +218,16 @@ describe('GameBoard instance', () => {
       });
     });
 
-    test('throws when trying to re-hit an already hit square', () => {
+    test('throws when trying to re-attack an already attacked square', () => {
       board.placeShip(1, 1, 2);
       board.receiveAttack([4, 4]);
       board.receiveAttack([1, 1]);
 
       expect(() => board.receiveAttack([4, 4])).toThrow(
-        'the specified square is already hit'
+        'the specified square is already attacked'
       );
       expect(() => board.receiveAttack([1, 1])).toThrow(
-        'the specified square is already hit'
+        'the specified square is already attacked'
       );
       expect(board.viewShips()[0].hits).toBe(1);
     });
@@ -200,6 +259,44 @@ describe('GameBoard instance', () => {
       expect(board.allSunk()).toBe(false);
       board.receiveAttack([3, 3]);
       expect(board.allSunk()).toBe(true);
+    });
+  });
+
+  describe('rotateShip()', () => {
+    test('given a ship id rotates the specified ship from vertical to horizontal and vice versa, and returns true', () => {
+      board.placeShip(9, 1, 2);
+      const ship = board.viewShips()[0];
+
+      expect(board.rotateShip(ship.id)).toBe(true);
+      expect(board.viewSquare([9, 1]).ship).toStrictEqual(ship);
+      expect(board.viewSquare([9, 2]).ship).toBeNull();
+      expect(board.viewSquare([10, 1]).ship).toStrictEqual(ship);
+
+      expect(board.rotateShip(ship.id)).toBe(true);
+      expect(board.viewSquare([9, 1]).ship).toStrictEqual(ship);
+      expect(board.viewSquare([9, 2]).ship).toStrictEqual(ship);
+      expect(board.viewSquare([10, 1]).ship).toBeNull();
+    });
+
+    test("returns false and doesn't rotate the ship if the rotation position is an overlapping position or out of the board bounds", () => {
+      board.placeShip(9, 1, 3);
+      const ship = board.viewShips()[0];
+
+      expect(board.rotateShip(ship.id)).toBe(false);
+      expect(board.viewSquare([9, 1]).ship).toStrictEqual(ship);
+      expect(board.viewSquare([9, 2]).ship).toStrictEqual(ship);
+      expect(board.viewSquare([9, 3]).ship).toStrictEqual(ship);
+      expect(board.viewSquare([10, 1]).ship).toBeNull();
+
+      board.placeShip(7, 1, 4);
+      const fourSquares = board.viewShips().find((ship) => ship.size === 4);
+
+      expect(board.rotateShip(fourSquares.id)).toBe(false);
+      expect(board.viewSquare([7, 1]).ship).toStrictEqual(fourSquares);
+      expect(board.viewSquare([7, 2]).ship).toStrictEqual(fourSquares);
+      expect(board.viewSquare([7, 3]).ship).toStrictEqual(fourSquares);
+      expect(board.viewSquare([7, 4]).ship).toStrictEqual(fourSquares);
+      expect(board.viewSquare([8, 1]).ship).toBeNull();
     });
   });
 });
