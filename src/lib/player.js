@@ -35,6 +35,6 @@ export class Player {
   attackOpponent(opponentBoard, square) {
     if (!opponentBoard || !opponentBoard.receiveAttack)
       throw new Error('invalid opponent board');
-    opponentBoard.receiveAttack(square);
+    return opponentBoard.receiveAttack(square);
   }
 }

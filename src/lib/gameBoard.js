@@ -138,6 +138,7 @@ export class GameBoard {
   }
 
   receiveAttack(square) {
+    let hit = false;
     if (!this.#isValidSquare(square))
       throw new Error('invalid square coordinates');
 
@@ -146,9 +147,13 @@ export class GameBoard {
       throw new Error('the specified square is already attacked');
 
     const ship = this.#squares.get(sqString);
-    if (ship) ship.hit();
+    if (ship) {
+      ship.hit();
+      hit = true;
+    }
 
     this.#attacks.add(sqString);
+    return hit;
   }
 
   allSunk() {
