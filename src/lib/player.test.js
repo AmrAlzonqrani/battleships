@@ -72,13 +72,21 @@ describe('Player instance', () => {
 
   describe('attackOpponent()', () => {
     test('delivers hit to the specified board by calling its receiveAttack method in the specified coordinations', () => {
-      const playerA = new Player();
-      const playerB = new Player();
+      const opponent = new Player();
 
-      playerA.attackOpponent(playerB.board, [1, 1]);
-      expect(playerB.board.viewSquare([1, 1]).hit).toBe(true);
-      expect(() => playerA.attackOpponent(playerB.board, [11, 1])).toThrow();
-      expect(() => playerA.attackOpponent(playerB.board, [1, 1])).toThrow();
+      player.attackOpponent(opponent.board, [1, 1]);
+      expect(opponent.board.viewSquare([1, 1]).hit).toBe(true);
+      expect(() => player.attackOpponent(opponent.board, [11, 1])).toThrow();
+      expect(() => player.attackOpponent(opponent.board, [1, 1])).toThrow();
+    });
+
+    test('returns true on ship hit and false otherwise', () => {
+      const opponent = new Player();
+      opponent.board.placeShip(1, 1, 3);
+
+      expect(player.attackOpponent(opponent.board, [1, 1])).toBe(true);
+      expect(player.attackOpponent(opponent.board, [1, 2])).toBe(true);
+      expect(player.attackOpponent(opponent.board, [2, 1])).toBe(false);
     });
 
     test('throws for invalid boards', () => {
