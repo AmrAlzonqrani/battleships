@@ -185,61 +185,10 @@ export class ComputerPlayer extends Player {
     return neighbors.filter((sq) => this.#isValidAttackSquare(sq));
   }
 
-  #getSunkShip(preSunk, postSunk) {
-    return postSunk.find(
-      (postShip) => !preSunk.some((preShip) => preShip.id === postShip.id)
+  #detectShipSquares(shipId, board) {
+    return this.#discoveredSquares.filter(
+      (sq) => board.viewSquare(sq).ship.id === shipId
     );
-  }
-
-  #detectShipSquares(square, shipSize, board) {
-    if (shipSize === 1) return [square];
-    const ship = [square];
-    const shipId = board.viewSquare(square).ship.id;
-    const [x, y] = square;
-
-    const verticalAdjacent = this.#discoveredSquares.find((sq) => {
-      const isAdjacent = sq[0] === x && Math.abs(sq[1] - y) === 1;
-      if (!isAdjacent) return false;
-      return board.viewSquare(sq).ship.id === shipId;
-    }); //check adjacent with same ship id
-
-    if (verticalAdjacent) {
-      const adjacentUp = verticalAdjacent[1] < y;
-      if (adjacentUp) {
-        for (let i = 1; i < shipSize; i++) {
-          ship.push([x, y - i]);
-        }
-      } else {
-        for (let i = 1; i < shipSize; i++) {
-          ship.push([x, y + i]);
-        }
-      }
-
-      return ship;
-    }
-
-    const horizontalAdjacent = this.#discoveredSquares.find((sq) => {
-      const isAdjacent = sq[1] === y && Math.abs(sq[0] - x) === 1;
-      if (!isAdjacent) return false;
-      return board.viewSquare(sq).ship.id === shipId;
-    });
-
-    if (horizontalAdjacent) {
-      const adjacentLeft = horizontalAdjacent[0] < x;
-      if (adjacentLeft) {
-        for (let i = 1; i < shipSize; i++) {
-          ship.push([x - i, y]);
-        }
-      } else {
-        for (let i = 1; i < shipSize; i++) {
-          ship.push([x + i, y]);
-        }
-      }
-
-      return ship;
-    }
-
-    return ship;
   }
 
   #unTrackDiscoveredSquares(squares) {
