@@ -1,7 +1,7 @@
 import { Ship } from './ship.js';
 
 export class GameBoard {
-  #ships = [];
+  #ships = new Map();
   #shipsTracker = new Map();
   #squares = new Map();
   #attacks = new Set();
@@ -34,7 +34,7 @@ export class GameBoard {
   }
 
   viewShips() {
-    return this.#ships.map((ship) => ship.shipData);
+    return Array.from(this.#ships.values()).map((ship) => ship.shipData);
   }
 
   viewSquare(square) {
@@ -87,14 +87,18 @@ export class GameBoard {
         'one or more of the specified squares contains another ship'
       );
 
-    const id = `ship-${this.#ships.length + 1}`;
+    const id = `ship-${this.#ships.size + 1}`;
     const ship = new Ship(size, id);
 
     shipPlace.squares.forEach((square) =>
       this.#squares.set(square.toString(), ship)
     );
-    this.#ships.push(ship);
-    this.#shipsTracker.set(id, { vertical, length: size, origin: [x, y] });
+    this.#ships.set(id, ship);
+    this.#shipsTracker.set(id, {
+      vertical,
+      origin: [x, y],
+      squares: shipPlace.squares,
+    });
     this.#shipsCountPerSize[size]++;
   }
 
@@ -105,17 +109,10 @@ export class GameBoard {
 
     this.#squares.delete(shipPlace.origin.toString());
     //remove origin square to prevent false overlapping (overlaps with itself)
-
-    const oldPlace = this.#placeShipOnBoard(
-      x,
-      y,
-      shipPlace.length,
-      shipPlace.vertical
-    );
     const newPlace = this.#placeShipOnBoard(
       x,
       y,
-      shipPlace.length,
+      shipPlace.squares.length,
       !shipPlace.vertical
     );
     if (newPlace.outGrid || newPlace.overlaps) {
@@ -123,7 +120,7 @@ export class GameBoard {
       return false;
     }
 
-    oldPlace.squares.forEach((square) =>
+    shipPlace.squares.forEach((square) =>
       this.#squares.delete(square.toString())
     );
     newPlace.squares.forEach((square) =>
@@ -131,8 +128,8 @@ export class GameBoard {
     );
     this.#shipsTracker.set(shipId, {
       vertical: !shipPlace.vertical,
-      length: shipPlace.length,
       origin: shipPlace.origin,
+      squares: newPlace.squares,
     });
     return true;
   }
@@ -157,7 +154,12 @@ export class GameBoard {
   }
 
   allSunk() {
-    if (this.#ships.length === 0) return false;
-    return this.#ships.every((ship) => ship.isSunk());
+    if (this.#ships.size === 0) return false;
+    let sunkShips = 0;
+    this.#ships.forEach((ship) => {
+      if (ship.isSunk()) sunkShips++;
+    });
+
+    return this.#ships.size === sunkShips;
   }
 }
