@@ -102,7 +102,37 @@ export class GameBoard {
     this.#shipsCountPerSize[size]++;
   }
 
+  #isValidId(id) {
+    return this.#ships.has(id);
+  }
+
+  removeShip(shipId) {
+    if (!this.#isValidId(shipId)) throw 'invalid ship remove request';
+
+    this.#ships.delete(shipId);
+    const squares = this.#shipsTracker.get(shipId).squares;
+    this.#shipsTracker.delete(shipId);
+    squares.forEach((sq) => {
+      this.#squares.delete(sq.toString());
+    });
+  }
+
+  clearBoard() {
+    this.#ships.clear();
+    this.#shipsTracker.clear();
+    this.#squares.clear();
+    this.#attacks.clear();
+    this.#shipsCountPerSize = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    };
+  }
+
   rotateShip(shipId) {
+    if (!this.#isValidId(shipId)) throw new Error('invalid ship id');
     const shipPlace = this.#shipsTracker.get(shipId);
     const [x, y] = shipPlace.origin;
     const ship = this.#squares.get(shipPlace.origin.toString());

@@ -15,6 +15,16 @@ describe('GameBoard instance', () => {
     [2],
     { size: 2 },
   ];
+
+  const invalidIds = [
+    'some ship',
+    { fakeShipId: true },
+    3,
+    null,
+    undefined,
+    false,
+  ];
+
   let board;
   beforeEach(() => (board = new GameBoard()));
 
@@ -181,6 +191,50 @@ describe('GameBoard instance', () => {
     });
   });
 
+  describe('removeShip()', () => {
+    test('removes a ship given its id', () => {
+      board.placeShip(1, 4, 3);
+      board.placeShip(7, 3, 4);
+      const secondShip = board.viewShips().find((ship) => ship.size === 4);
+      board.removeShip(secondShip.id);
+      const shipsAfter = board.viewShips();
+      expect(shipsAfter).toHaveLength(1);
+      expect(shipsAfter[0].size).toBe(3);
+      expect(board.viewSquare([7, 3]).ship).toBeNull();
+    });
+
+    test('enables placing ships in the emptied square after a ship remove', () => {
+      board.placeShip(1, 4, 3);
+      const ships = board.viewShips();
+      board.removeShip(ships[0].id);
+      expect(() => board.placeShip(1, 4, 3)).not.toThrow();
+    });
+
+    test('throws for invalid ids or unsuccessful remove', () => {
+      invalidIds.forEach((id) =>
+        expect(() => board.removeShip(id)).toThrow(
+          'invalid ship remove request'
+        )
+      );
+    });
+  });
+
+  describe('clearBoard()', () => {
+    test('clears all ships on the board, and reset board to its initial state', () => {
+      const initialSquare = { ship: null, hit: false };
+      board.placeShip(2, 2, 5);
+      board.placeShip(3, 5, 4);
+      board.receiveAttack([2, 2]);
+      board.receiveAttack([1, 1]);
+
+      board.clearBoard();
+      expect(board.viewShips()).toHaveLength(0);
+      expect(board.viewSquare([2, 2])).toStrictEqual(initialSquare);
+      expect(board.viewSquare([1, 1])).toStrictEqual(initialSquare);
+      expect(() => board.placeShip(2, 2, 5)).not.toThrow();
+    });
+  });
+
   describe('receiveAttack()', () => {
     test('returns false, and marks specified square as hit for an empty square', () => {
       expect(board.receiveAttack([1, 1])).toBe(false);
@@ -297,6 +351,12 @@ describe('GameBoard instance', () => {
       expect(board.viewSquare([7, 3]).ship).toStrictEqual(fourSquares);
       expect(board.viewSquare([7, 4]).ship).toStrictEqual(fourSquares);
       expect(board.viewSquare([8, 1]).ship).toBeNull();
+    });
+
+    test('throws for invalid ids', () => {
+      invalidIds.forEach((id) =>
+        expect(() => board.rotateShip(id)).toThrow('invalid ship id')
+      );
     });
   });
 });
