@@ -118,7 +118,7 @@ export class ComputerPlayer extends Player {
     //find if the two neighbors have other neighbors in their axis
     if (vertical) {
       let up = squares[0];
-      let down = squares[squares.length - 1];
+      let down = squares[1];
 
       while (up[1] > 1) {
         const upNeighbor = hits.find(
@@ -139,7 +139,7 @@ export class ComputerPlayer extends Player {
       }
     } else {
       let left = squares[0];
-      let right = squares[squares.length - 1];
+      let right = squares[1];
 
       while (left[0] > 1) {
         const leftNeighbor = hits.find(
@@ -202,16 +202,14 @@ export class ComputerPlayer extends Player {
 
   huntShips(board) {
     const length = this.#discoveredSquares.length;
-    const preSunkShips = board.viewShips().filter((ship) => ship.isSunk);
 
     if (length === 0) {
       //attack randomly if no ships discovered
       const random = this.#pickRandomSquare();
       this.#deliverAttack(board, random);
 
-      const postSunkShips = board.viewShips().filter((ship) => ship.isSunk);
-      if (postSunkShips.length > preSunkShips.length)
-        this.#unTrackDiscoveredSquares([random]);
+      const ship = board.viewSquare(random).ship;
+      if (ship && ship.isSunk) this.#unTrackDiscoveredSquares([random]);
 
       return;
     }
@@ -235,18 +233,12 @@ export class ComputerPlayer extends Player {
 
       this.#deliverAttack(board, attackSq);
 
-      const postSunkShips = board.viewShips().filter((ship) => ship.isSunk);
-      if (postSunkShips.length > preSunkShips.length) {
+      const ship = board.viewSquare(attackSq).ship;
+      if (ship && ship.isSunk) {
         //if a ship sinks untrack its squares (remove from discovered)
-        const sunkShip = this.#getSunkShip(preSunkShips, postSunkShips);
-
-        if (sunkShip.size === 1) this.#unTrackDiscoveredSquares([attackSq]);
+        if (ship.size === 1) this.#unTrackDiscoveredSquares([attackSq]);
         else {
-          const squares = this.#detectShipSquares(
-            attackSq,
-            sunkShip.size,
-            board
-          );
+          const squares = this.#detectShipSquares(ship.id, board);
           this.#unTrackDiscoveredSquares(squares);
         }
       }
@@ -280,15 +272,10 @@ export class ComputerPlayer extends Player {
 
     this.#deliverAttack(board, randomAttackSq);
 
-    const postSunkShips = board.viewShips().filter((ship) => ship.isSunk);
-    if (postSunkShips.length > preSunkShips.length) {
-      //if a ship sinks and untrack its square
-      const sunkShip = this.#getSunkShip(preSunkShips, postSunkShips);
-      const squares = this.#detectShipSquares(
-        randomAttackSq,
-        sunkShip.size,
-        board
-      );
+    const ship = board.viewSquare(randomAttackSq).ship;
+    if (ship && ship.isSunk) {
+      //if a ship sinks untrack its square
+      const squares = this.#detectShipSquares(ship.id, board);
       this.#unTrackDiscoveredSquares(squares);
     }
   }
