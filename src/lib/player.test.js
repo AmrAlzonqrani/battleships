@@ -101,4 +101,15 @@ describe('Player instance', () => {
       );
     });
   });
+
+  describe('placeShipsRandomly()', () => {
+    test('place all ships according to the game rules', () => {
+      const totalShips = 9;
+      for (let i = 0; i < 99; i++) {
+        const player = new Player();
+        expect(() => player.placeShipsRandomly()).not.toThrow();
+        expect(player.board.viewShips()).toHaveLength(totalShips);
+      }
+    });
+  });
 });

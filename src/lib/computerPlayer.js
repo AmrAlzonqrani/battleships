@@ -2,21 +2,10 @@ import { Player } from './player.js';
 
 export class ComputerPlayer extends Player {
   #deliveredAttacks = {};
-  #shipsNumbersPerSize = {
-    1: 2,
-    2: 3,
-    3: 2,
-    4: 1,
-    5: 1,
-  };
-  #boardGrid = new Array(10);
   #discoveredSquares = [];
 
-  constructor() {
-    super('computer');
-    for (let i = 0; i < 10; i++) {
-      this.#boardGrid[i] = new Array(10).fill(true);
-    }
+  constructor(name = 'computer') {
+    super(name);
   }
 
   #pickRandomSquare() {
@@ -352,63 +341,6 @@ export class ComputerPlayer extends Player {
         board
       );
       this.#unTrackDiscoveredSquares(squares);
-    }
-  }
-
-  #getAvailablePlacesForShipSize(size, vertical) {
-    const places = [];
-
-    for (let x = 0; x < 10; x++) {
-      for (let y = 0; y < 10; y++) {
-        let validPlace = true;
-
-        if (vertical) {
-          for (let i = y; i < y + size; i++) {
-            if (!this.#boardGrid[x] || !this.#boardGrid[x][i]) {
-              validPlace = false;
-              break;
-            }
-          }
-        } else {
-          for (let i = x; i < x + size; i++) {
-            if (!this.#boardGrid[i] || !this.#boardGrid[i][y]) {
-              validPlace = false;
-              break;
-            }
-          }
-        }
-
-        if (validPlace) places.push([x + 1, y + 1]);
-      }
-    }
-
-    return places;
-  }
-
-  placeShipsRandomly() {
-    const sizes = Object.keys(this.#shipsNumbersPerSize).sort((a, b) => b - a);
-    //sorting sizes in descending order
-
-    for (const key of sizes) {
-      const size = +key;
-      const shipsCount = this.#shipsNumbersPerSize[key];
-      for (let i = 0; i < shipsCount; i++) {
-        const vertical = Math.random() > 0.5;
-        const places = this.#getAvailablePlacesForShipSize(size, vertical);
-        const [x, y] = places[Math.floor(Math.random() * places.length)];
-
-        this.board.placeShip(x, y, size, vertical);
-
-        if (vertical) {
-          for (let i = y - 1; i < y + size - 1; i++) {
-            this.#boardGrid[x - 1][i] = false;
-          }
-        } else {
-          for (let i = x - 1; i < x + size - 1; i++) {
-            this.#boardGrid[i][y - 1] = false;
-          }
-        }
-      }
     }
   }
 }

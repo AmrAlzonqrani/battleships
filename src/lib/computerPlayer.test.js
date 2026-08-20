@@ -213,15 +213,4 @@ describe('ComputerPlayer instance', () => {
       }
     });
   });
-
-  describe('placeShipsRandomly()', () => {
-    test('place all ships according to the game rules', () => {
-      const totalShips = 9;
-      for (let i = 0; i < 99; i++) {
-        const ai = new ComputerPlayer();
-        expect(() => ai.placeShipsRandomly()).not.toThrow();
-        expect(ai.board.viewShips()).toHaveLength(totalShips);
-      }
-    });
-  });
 });
