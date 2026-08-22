@@ -80,13 +80,22 @@ describe('Player instance', () => {
       expect(() => player.attackOpponent(opponent.board, [1, 1])).toThrow();
     });
 
-    test('returns true on ship hit and false otherwise', () => {
+    test('returns the attack result returned by the receiveAttack method of the attacked board', () => {
       const opponent = new Player();
       opponent.board.placeShip(1, 1, 3);
 
-      expect(player.attackOpponent(opponent.board, [1, 1])).toBe(true);
-      expect(player.attackOpponent(opponent.board, [1, 2])).toBe(true);
-      expect(player.attackOpponent(opponent.board, [2, 1])).toBe(false);
+      expect(player.attackOpponent(opponent.board, [1, 1])).toStrictEqual({
+        hit: true,
+        sunk: false,
+      });
+      expect(player.attackOpponent(opponent.board, [1, 2])).toStrictEqual({
+        hit: true,
+        sunk: false,
+      });
+      expect(player.attackOpponent(opponent.board, [2, 1])).toStrictEqual({
+        hit: false,
+        sunk: false,
+      });
     });
 
     test('throws for invalid boards', () => {

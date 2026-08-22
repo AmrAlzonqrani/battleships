@@ -43,17 +43,19 @@ export class ComputerPlayer extends Player {
 
   #deliverAttack(board, square) {
     const [x, y] = square;
-    const hit = this.attackOpponent(board, [x, y]);
+    const attackResult = this.attackOpponent(board, square);
 
     if (!this.#deliveredAttacks[x]) this.#deliveredAttacks[x] = [y];
     else this.#deliveredAttacks[x].push(y);
 
-    if (hit) this.#discoveredSquares.push([x, y]);
+    if (attackResult.hit) this.#discoveredSquares.push([x, y]);
+    return attackResult;
   }
 
   randomAttack(board) {
     const square = this.#pickRandomSquare();
-    this.#deliverAttack(board, square);
+    const attackResult = this.#deliverAttack(board, square);
+    return { square, ...attackResult };
   }
 
   #findPattern() {
@@ -206,12 +208,11 @@ export class ComputerPlayer extends Player {
     if (length === 0) {
       //attack randomly if no ships discovered
       const random = this.#pickRandomSquare();
-      this.#deliverAttack(board, random);
+      const attackResult = this.#deliverAttack(board, random);
 
-      const ship = board.viewSquare(random).ship;
-      if (ship && ship.isSunk) this.#unTrackDiscoveredSquares([random]);
+      if (attackResult.sunk) this.#unTrackDiscoveredSquares([random]);
 
-      return;
+      return { ...attackResult, square: random };
     }
 
     let pattern;
@@ -231,10 +232,10 @@ export class ComputerPlayer extends Player {
       const attackSq =
         validNeighbors[Math.floor(Math.random() * validNeighbors.length)];
 
-      this.#deliverAttack(board, attackSq);
+      const attackResult = this.#deliverAttack(board, attackSq);
 
-      const ship = board.viewSquare(attackSq).ship;
-      if (ship && ship.isSunk) {
+      if (attackResult.sunk) {
+        const ship = board.viewSquare(attackSq).ship;
         //if a ship sinks untrack its squares (remove from discovered)
         if (ship.size === 1) this.#unTrackDiscoveredSquares([attackSq]);
         else {
@@ -243,7 +244,7 @@ export class ComputerPlayer extends Player {
         }
       }
 
-      return;
+      return { ...attackResult, square: attackSq };
     }
 
     const { squares, vertical } = pattern;
@@ -270,13 +271,15 @@ export class ComputerPlayer extends Player {
     const randomAttackSq =
       attackSqs[Math.floor(Math.random() * attackSqs.length)];
 
-    this.#deliverAttack(board, randomAttackSq);
+    const attackResult = this.#deliverAttack(board, randomAttackSq);
 
-    const ship = board.viewSquare(randomAttackSq).ship;
-    if (ship && ship.isSunk) {
+    if (attackResult.sunk) {
+      const ship = board.viewSquare(randomAttackSq).ship;
       //if a ship sinks untrack its square
       const squares = this.#detectShipSquares(ship.id, board);
       this.#unTrackDiscoveredSquares(squares);
     }
+
+    return { ...attackResult, square: randomAttackSq };
   }
 }

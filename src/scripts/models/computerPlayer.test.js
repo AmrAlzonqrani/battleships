@@ -42,6 +42,14 @@ describe('ComputerPlayer instance', () => {
         'no more unique squares to attack'
       );
     });
+
+    test('returns object with the attack result (hit, sunk) and the attacked square', () => {
+      const returnV = ai.randomAttack(opponent.board);
+      expect(Object.keys(returnV)).toHaveLength(3);
+      expect(returnV).toHaveProperty('square');
+      expect(returnV).toHaveProperty('hit');
+      expect(returnV).toHaveProperty('sunk');
+    });
   });
 
   describe('huntShips()', () => {
@@ -64,6 +72,7 @@ describe('ComputerPlayer instance', () => {
       for (let i = 0; i < 10; i++) {
         const ai = new ComputerPlayer();
         const opponent = new ComputerPlayer();
+
         ai.huntShips(opponent.board);
         ai.huntShips(opponent.board);
         ai.huntShips(opponent.board);
@@ -211,6 +220,16 @@ describe('ComputerPlayer instance', () => {
           expect(() => ai.huntShips(opponent.board)).not.toThrow();
         }
       }
+    });
+
+    test('returns object with the attack result (hit, sunk) and the attacked square', () => {
+      const opponent = new ComputerPlayer();
+      const returnV = ai.huntShips(opponent.board);
+
+      expect(Object.keys(returnV)).toHaveLength(3);
+      expect(returnV).toHaveProperty('square');
+      expect(returnV).toHaveProperty('hit');
+      expect(returnV).toHaveProperty('sunk');
     });
   });
 });

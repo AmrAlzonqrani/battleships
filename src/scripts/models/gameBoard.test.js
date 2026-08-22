@@ -236,8 +236,11 @@ describe('GameBoard instance', () => {
   });
 
   describe('receiveAttack()', () => {
-    test('returns false, and marks specified square as hit for an empty square', () => {
-      expect(board.receiveAttack([1, 1])).toBe(false);
+    test('returns attack result, and marks specified square as hit for an empty square', () => {
+      expect(board.receiveAttack([1, 1])).toStrictEqual({
+        hit: false,
+        sunk: false,
+      });
       expect(board.viewSquare([1, 1]).hit).toBe(true);
 
       board.receiveAttack([3, 3]);
@@ -246,12 +249,18 @@ describe('GameBoard instance', () => {
       expect(board.viewSquare([5, 1]).hit).toBe(true);
     });
 
-    test("returns true, and marks specified square as hit for occupied square, and calls the ship's hit method to increment its hit count", () => {
+    test("returns attack result, and marks specified square as hit for occupied square, and calls the ship's hit method to increment its hit count", () => {
       board.placeShip(1, 1, 3);
       board.placeShip(5, 2, 2, false);
 
-      expect(board.receiveAttack([1, 1])).toBe(true);
-      expect(board.receiveAttack([1, 3])).toBe(true);
+      expect(board.receiveAttack([1, 1])).toStrictEqual({
+        hit: true,
+        sunk: false,
+      });
+      expect(board.receiveAttack([1, 3])).toStrictEqual({
+        hit: true,
+        sunk: false,
+      });
       expect(board.viewSquare([1, 1]).hit).toBe(true);
       expect(board.viewSquare([1, 3]).hit).toBe(true);
       expect(board.viewSquare([1, 3]).ship.hits).toBe(2);

@@ -166,6 +166,7 @@ export class GameBoard {
 
   receiveAttack(square) {
     let hit = false;
+    let sunk = false;
     if (!this.#isValidSquare(square))
       throw new Error('invalid square coordinates');
 
@@ -177,10 +178,11 @@ export class GameBoard {
     if (ship) {
       ship.hit();
       hit = true;
+      sunk = ship.isSunk();
     }
 
     this.#attacks.add(sqString);
-    return hit;
+    return { hit, sunk };
   }
 
   allSunk() {
